@@ -1,0 +1,40 @@
+[package]
+name = "voxelkloud-wasm-codecs"
+version = "0.0.0"
+edition = "2021"
+description = "LAZ decoding for voxelkloud, compiled to wasm: laszip chunks for COPC and EPT, whole LAZ files for the single-file tier, and the LAS framing needed to find them."
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# The LAS framing — the public header block and the VLR/EVLR directories —
+# lives in the native library, and this compiles the same source to wasm.
+# `default-features = false` leaves out the manifest formats and the codec, so
+# what comes in is the `las` module and nothing else: it has no dependencies of
+# its own, and the artefact does not grow.
+voxelkloud-io = { path = "../../crates/voxelkloud-io", default-features = false }
+
+# laz-rs: a pure-Rust port of laszip. The rest of the ecosystem ships laz-perf
+# through Emscripten; this builds with the stock wasm32 target and no C
+# toolchain. The `parallel` feature pulls rayon and is left off — threads on the
+# web need cross-origin isolation, and the caller already runs us in a worker.
+laz = { version = "0.13", default-features = false }
+
+# Unlike `wasm-core`, this crate uses bindgen. Its surface moves megabytes of
+# typed arrays and every entry point can fail on malformed input, so the
+# generated glue pays for itself where hand-written offset math would not.
+#
+# Pinned exactly: the CLI that post-processes the module must match the crate
+# version, and a silent minor bump breaks the build with a confusing error.
+wasm-bindgen = "=0.2.127"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+# No `panic = "abort"`: wasm32 aborts on panic either way, and leaving the
+# default keeps the panic message in the trap for the poison handling in
+# `src/index.ts` to report.

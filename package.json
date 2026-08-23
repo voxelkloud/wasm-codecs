@@ -1,0 +1,57 @@
+{
+  "name": "@voxelkloud/wasm-codecs",
+  "version": "0.1.0",
+  "description": "LAZ decoding for voxelkloud, compiled to wasm from laz-rs: standalone laszip chunks for COPC and EPT, whole files for the single-file tier, and the LAS framing needed to find them.",
+  "license": "MIT",
+  "keywords": [
+    "point-cloud",
+    "lidar",
+    "laz",
+    "laszip",
+    "las",
+    "copc",
+    "ept",
+    "wasm",
+    "rust"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voxelkloud/wasm-codecs.git"
+  },
+  "homepage": "https://github.com/voxelkloud/voxelkloud",
+  "bugs": {
+    "url": "https://github.com/voxelkloud/voxelkloud/issues"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./voxelkloud_wasm_codecs_bg.wasm": "./dist/voxelkloud_wasm_codecs_bg.wasm"
+  },
+  "files": [
+    "dist",
+    "THIRD-PARTY-NOTICES.md"
+  ],
+  "scripts": {
+    "build:wasm": "cargo build --target wasm32-unknown-unknown --release && wasm-bindgen target/wasm32-unknown-unknown/release/voxelkloud_wasm_codecs.wasm --target web --out-dir src/generated && mkdir -p dist && cp src/generated/voxelkloud_wasm_codecs_bg.wasm dist/",
+    "build": "pnpm run build:wasm && tsup",
+    "fixtures": "cargo run --release --example make-fixtures",
+    "test": "node scripts/with-wasm.mjs vitest run",
+    "typecheck": "node scripts/with-wasm.mjs tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
