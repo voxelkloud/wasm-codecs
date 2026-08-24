@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib"]
 # `default-features = false` leaves out the manifest formats and the codec, so
 # what comes in is the `las` module and nothing else: it has no dependencies of
 # its own, and the artefact does not grow.
-voxelkloud-io = { path = "../../crates/voxelkloud-io", default-features = false }
+voxelkloud-io = { version = "0.5.1", default-features = false }
 
 # laz-rs: a pure-Rust port of laszip. The rest of the ecosystem ships laz-perf
 # through Emscripten; this builds with the stock wasm32 target and no C
