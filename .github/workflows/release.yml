@@ -37,6 +37,15 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      # The wasm-bindgen CLI has to match the wasm-bindgen CRATE exactly, or it
+      # refuses the module. Read from the lockfile rather than pinned here, so a
+      # dependency bump cannot silently desync the two.
+      - name: Install wasm-bindgen-cli
+        run: |
+          VER=$(grep -A1 'name = "wasm-bindgen"' Cargo.lock | grep '^version' | head -1 | cut -d'"' -f2)
+          echo "wasm-bindgen $VER"
+          cargo install wasm-bindgen-cli --version "$VER" --locked
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.34.4
