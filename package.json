@@ -1,6 +1,6 @@
 {
   "name": "@voxelkloud/wasm-codecs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "LAZ decoding for voxelkloud, compiled to wasm from laz-rs: standalone laszip chunks for COPC and EPT, whole files for the single-file tier, and the LAS framing needed to find them.",
   "license": "MIT",
   "keywords": [
