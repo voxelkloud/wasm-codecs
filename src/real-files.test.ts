@@ -64,9 +64,16 @@ describe.skipIf(!HAS_PAIRS)("PotreeConverter LAS/LAZ pairs", () => {
   // Every octree node PotreeConverter wrote twice, once each way. Same points,
   // same order, one compressed by LASzip's C++ encoder: byte equality is the
   // whole conformance claim in one assertion, 200 times over.
-  const names = readdirSync(LAZ_DIR)
-    .filter((n) => n.endsWith(".laz"))
-    .sort();
+  // Guarded, even though the `describe` above is already skipped when the data
+  // is missing: vitest evaluates a describe BODY to collect its tests and only
+  // then honours `skipIf`, so an eager `readdirSync` throws before the skip can
+  // take effect. The intent was right and the placement defeated it — which is
+  // how a repository with no test data still failed on the missing directory.
+  const names = HAS_PAIRS
+    ? readdirSync(LAZ_DIR)
+        .filter((n) => n.endsWith(".laz"))
+        .sort()
+    : [];
 
   it("has pairs to compare", () => {
     expect(names.length).toBeGreaterThan(100);
